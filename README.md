@@ -5,6 +5,14 @@
   <p>AirPlay-compatible screen mirroring &amp; extended display receiver.</p>
 </div>
 
+> **This is a fork: Wormhole Touch.** It adds touch control: the Portal's touchscreen drives the Mac
+> screen shown on it (tap, drag, two-finger scroll, press-and-hold for right click), using a small
+> companion Mac app in [`mac-helper/`](mac-helper/). See [docs/touch-forwarding.md](docs/touch-forwarding.md).
+> It also merges the optional PIN pairing from upstream pull request #7 (not yet released upstream)
+> and keeps the system bars hidden whenever the app returns to the front. Tested on a first-generation
+> Portal (10″, 1280×800). Modified from [pgodlews/wormhole-display](https://github.com/pgodlews/wormhole-display)
+> in November 2026; licensed under GPLv3 like the original.
+
 > *"A wormhole connects two distant points in spacetime. Wormhole Display bridges two ecosystems that were never meant to talk to each other..."*
 
 <p align="center">
@@ -41,6 +49,7 @@ Wormhole Display is an independent community project and is not affiliated with 
 - **Back or Home to disconnect**: leaving the stream on the Portal ends the session on your Mac or iPhone too.
 - **Several Portals, one network**: each device has its own identity, so a Portal+ and a Portal TV can both be available at once.
 - **Remote-friendly on Portal TV**: full D-pad navigation with clear focus highlights.
+- **Touch control (this fork)**: with the companion Mac app in [`mac-helper/`](mac-helper/), the Portal's touchscreen controls the Mac screen it shows: tap to click, drag, two-finger scroll and press-and-hold for right click. See [docs/touch-forwarding.md](docs/touch-forwarding.md).
 - **Dashboard and stats**: network details, recommended resolutions, recent connections, and an optional on-screen stats overlay (FPS, bitrate, codec).
 
 ---
@@ -54,6 +63,7 @@ Tested on:
 | **Portal+ (Gen 2)** | 14″ 2160×1440 (3:2), 60 Hz | Stereo + subwoofer | Fixed tilt (Landscape default, manual portrait) | Touch |
 | **Portal Mini (8″)** | 8″ 1280×800 (16:10), 60 Hz | Stereo | Dual-orientation body (Auto & manual) | Touch |
 | **Portal Go** | 10.1″ 1280×800 (16:10), 60 Hz | Stereo, battery powered | Fixed wedge (Landscape default, manual portrait) | Touch |
+| **Portal (Gen 1, 10″)** | 10.1″ 1280×800 (16:10), 60 Hz | Stereo | Fixed (Landscape) | Touch (tested in this fork) |
 | **Portal TV** | Your TV over HDMI, 1080p (16:9), 60 Hz | TV or soundbar via HDMI | Fixed (Landscape default, manual portrait) | Remote (D-pad) |
 
 Other Portal models haven't been tested yet; reports are welcome. Other Android 9+ (API 28+) 64-bit ARM devices may also work, but are untested.
@@ -122,6 +132,8 @@ adb install -r dist/wormhole-display.apk
 adb shell am start -n io.github.pgodlews.wormhole/.MainActivity
 ```
 
+For the touch-control Mac helper, see [docs/touch-forwarding.md](docs/touch-forwarding.md#install).
+
 Protocol details, contributor notes and troubleshooting are in [AGENTS.md](AGENTS.md) and [docs/architecture.md](docs/architecture.md).
 
 ---
@@ -144,6 +156,8 @@ See [the architecture notes](docs/architecture.md) for the details.
 ## Security
 
 By default, Wormhole Display accepts screen-mirroring connections from **any device on your local network, without a PIN or password**. Run it only on networks you trust, or turn on **Require PIN** in the dashboard: each new device must then enter a 4-digit code shown on the receiver once, the way Apple TV does. Paired devices reconnect without a code until you choose *Forget All*. Legacy AirPlay audio (iTunes and older Macs) is unavailable while a PIN is required.
+
+The touch stream used by this fork's Mac helper (TCP 7213) is not authenticated or encrypted: devices on the network can see where the screen is touched. See [docs/touch-forwarding.md](docs/touch-forwarding.md#security).
 
 ---
 

@@ -176,6 +176,7 @@ object WormholeServer {
         prefs = appContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
         identity = WormholeIdentity(appContext)
+        TouchBridge.start(appContext, identity.serviceName)
         history = ConnectionHistory(appContext)
         _recentConnections.value = history.getRecent()
         pairedClients = PairedClients(appContext)
@@ -254,6 +255,7 @@ object WormholeServer {
 
     fun updateServiceName(newName: String) {
         identity.serviceName = newName
+        TouchBridge.updateDisplayName(identity.serviceName)
         restartServer()
     }
 

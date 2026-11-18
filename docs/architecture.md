@@ -254,3 +254,12 @@ UxPlay is GPLv3 (its `lib/` mirroring core is LGPLv2.1+; bundled `llhttp` is MIT
   optional *Require PIN* mode admits only paired senders and turns off legacy RAOP audio.
 - The sender chooses mirroring vs extended display and the codec; advertising
   HEVC support does not force HEVC.
+
+## Touch forwarding (Wormhole Touch fork)
+
+`TouchBridge` is independent of the AirPlay core. The video `SurfaceView` passes its `MotionEvent`s
+to it; it normalises them to the view (which is sized to the video's aspect ratio) and writes one
+line per event to every client connected on TCP 7213, on a single writer thread. The port is
+advertised through Android's `NsdManager` as `_wormholetouch._tcp`. The macOS helper in
+`mac-helper/` does gesture recognition and event injection. Protocol and gestures:
+[touch-forwarding.md](touch-forwarding.md).

@@ -259,3 +259,12 @@ device: uninstall first when switching (this resets the receiver identity and th
 - **GPLv3**: everything here links UxPlay. Never copy code from this repo into
   non-GPL-compatible projects, and keep `LICENSE` and `THIRD_PARTY_NOTICES.md`
   intact.
+
+## Touch forwarding (fork)
+
+- `TouchBridge.kt` (Portal) and `mac-helper/` (macOS, Swift) implement touch control; see
+  `docs/touch-forwarding.md`.
+- Do not use TCP 7100 for anything else: it is UxPlay's mirror data socket (`wormhole_jni.c`).
+  The touch bridge uses 7213.
+- `MainActivity.hideSystemBars()` must run on resume and focus regain, or the status bar stays
+  visible and the mirrored picture shrinks.

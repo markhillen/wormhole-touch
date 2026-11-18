@@ -153,9 +153,7 @@ class MainActivity : ComponentActivity() {
             setTurnScreenOn(true)
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        hideSystemBars()
 
         WormholeServer.init(applicationContext)
 
@@ -221,6 +219,10 @@ class MainActivity : ComponentActivity() {
                             AndroidView(
                                 factory = { context ->
                                     SurfaceView(context).apply {
+                                        setOnTouchListener { view, event ->
+                                            TouchBridge.onTouch(event, view.width, view.height)
+                                            true
+                                        }
                                         holder.addCallback(object : SurfaceHolder.Callback {
                                             override fun surfaceCreated(holder: SurfaceHolder) {
                                                 WormholeServer.setSurface(holder.surface)
@@ -328,7 +330,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Re-apply on focus/resume: dialogs, pulled-down bars and other apps clear these flags, which
+    // leaves the status bar on screen and shrinks the mirrored picture.
+    private fun hideSystemBars() {
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemBars()
+    }
+
     override fun onResume() {
+        hideSystemBars()
         super.onResume()
         WormholeServer.isActivityResumed = true
         networkDetails = NetworkInfoHelper.getNetworkDetails(this)
